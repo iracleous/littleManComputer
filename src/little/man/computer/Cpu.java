@@ -1,5 +1,6 @@
 package little.man.computer;
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,7 +16,11 @@ public class Cpu {
 
     private String[] codeMemory = new String[200];
     private int[] dataMemory = new int[200];
+    private JTextArea textArea;
 
+    public Cpu(JTextArea textArea){
+        this.textArea=textArea;
+    }
 
     public void loadProgram(String filename) {
         int position = 0;
@@ -31,19 +36,29 @@ public class Cpu {
     public void printMemory()
     {
         for (int i=20;i<30;i++)
-            System.out.println(i+":= "+dataMemory[i]+ " ");
+            textArea.append(i+":= "+dataMemory[i]+ " \n");
     }
 
 
     public void executeProgram() {
-        for (String instruction : codeMemory) {
-            if (instruction==null) break;
-            System.out.println("The instruction is   " + instruction);
-           instruction = instruction.trim();
+        instructionRegister = 0;
+
+        do{
+            String instruction = codeMemory[instructionRegister];
+            if (instruction == null ) break;
+
+            instruction = instruction.trim().toUpperCase();
+            if (instruction.equals("HLT") ) break;
+            textArea.append("The instruction is   " + instruction+ " \n");
+
+            instructionRegister ++;
+
             String instr[] = instruction.split(" ");
             if (instr.length == 1) process(instruction.trim());
             if (instr.length == 2) process(instr[0].trim(), instr[1].trim());
-        }
+        } while (true);
+
+
     }
 
     public void process(String instruction, String parameter) {
@@ -61,8 +76,19 @@ public class Cpu {
             case "SUB":
                 accumulator -= dataMemory[position];
                 break;
+            case "BRZ":
+                if (accumulator == 0)
+                    instructionRegister = Integer.parseInt(parameter);
+                break;
+            case "BRP":
+                if (accumulator >= 0)
+                     instructionRegister = Integer.parseInt(parameter);
+                break;
+            case "BRA":
+                instructionRegister = Integer.parseInt(parameter);
+                break;
             default:
-                System.out.println("do not know");
+                textArea.append("do not know"+ "\n");
         }
     }
 
@@ -70,19 +96,18 @@ public class Cpu {
     public void process(String instruction) {
         switch (instruction) {
             case "INP":
-                System.out.println("Give value for the accumulator");
-                Scanner sc = new Scanner(System.in);
-                accumulator = sc.nextInt();
+              String value=  JOptionPane.showInputDialog(null,
+                        "Give value for the accumulator");
+               accumulator = Integer.parseInt(value);
                 break;
             case "OUT":
-                System.out.println("Accumulator= " + accumulator);
+                textArea.append("Accumulator= " + accumulator + "\n");
                 break;
-
             case "HLT":
-                System.out.println("The program ends");
+                textArea.append("The program ends"+ "\n");
                 break;
             default:
-                System.out.println("do not know");
+                textArea.append("do not know"+ "\n");
 
         }
     }

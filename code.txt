@@ -1,3 +1,12 @@
+ INP
+ brz 3
+ hlt
+ inp
+ sta 21
+ hlt
+
+
+
 INP
 STA 21
 ADD 21
