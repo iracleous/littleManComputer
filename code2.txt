@@ -1,0 +1,17 @@
+
+
+
+INP
+STA 21
+INP
+STA 22
+LDA 21
+ADD 22
+STA 23
+SUB 21
+OUT
+HLT
+
+
+
+
